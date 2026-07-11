@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import time
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request
 from prometheus_client import Counter, Histogram
@@ -39,10 +40,23 @@ logger = logging.getLogger("heart_api")
 PREDICTIONS_TOTAL = Counter("heart_predictions_total", "Total predictions served", ["outcome"])
 PREDICTION_LATENCY = Histogram("heart_prediction_latency_seconds", "Latency of /predict handler")
 
+
+@asynccontextmanager
+async def _lifespan(app: "FastAPI"):
+    """Warm the model at startup so the first request is fast."""
+    try:
+        load_model()
+        logger.info("Model loaded successfully at startup.")
+    except FileNotFoundError as exc:
+        logger.warning("Model not available at startup: %s", exc)
+    yield
+
+
 app = FastAPI(
     title="Heart Disease Risk Prediction API",
     description="Predicts the risk of heart disease from patient health data.",
     version="1.0.0",
+    lifespan=_lifespan,
 )
 
 
@@ -50,19 +64,21 @@ app = FastAPI(
 # Pydantic schemas
 # ---------------------------------------------------------------------------
 class PatientFeatures(BaseModel):
-    age: float = Field(..., example=63, description=config.FEATURE_DESCRIPTIONS["age"])
-    sex: int = Field(..., example=1, description=config.FEATURE_DESCRIPTIONS["sex"])
-    cp: int = Field(..., example=3, description=config.FEATURE_DESCRIPTIONS["cp"])
-    trestbps: float = Field(..., example=145, description=config.FEATURE_DESCRIPTIONS["trestbps"])
-    chol: float = Field(..., example=233, description=config.FEATURE_DESCRIPTIONS["chol"])
-    fbs: int = Field(..., example=1, description=config.FEATURE_DESCRIPTIONS["fbs"])
-    restecg: int = Field(..., example=0, description=config.FEATURE_DESCRIPTIONS["restecg"])
-    thalach: float = Field(..., example=150, description=config.FEATURE_DESCRIPTIONS["thalach"])
-    exang: int = Field(..., example=0, description=config.FEATURE_DESCRIPTIONS["exang"])
-    oldpeak: float = Field(..., example=2.3, description=config.FEATURE_DESCRIPTIONS["oldpeak"])
-    slope: int = Field(..., example=0, description=config.FEATURE_DESCRIPTIONS["slope"])
-    ca: float = Field(..., example=0, description=config.FEATURE_DESCRIPTIONS["ca"])
-    thal: float = Field(..., example=1, description=config.FEATURE_DESCRIPTIONS["thal"])
+    age: float = Field(..., examples=[63], description=config.FEATURE_DESCRIPTIONS["age"])
+    sex: int = Field(..., examples=[1], description=config.FEATURE_DESCRIPTIONS["sex"])
+    cp: int = Field(..., examples=[3], description=config.FEATURE_DESCRIPTIONS["cp"])
+    trestbps: float = Field(
+        ..., examples=[145], description=config.FEATURE_DESCRIPTIONS["trestbps"]
+    )
+    chol: float = Field(..., examples=[233], description=config.FEATURE_DESCRIPTIONS["chol"])
+    fbs: int = Field(..., examples=[1], description=config.FEATURE_DESCRIPTIONS["fbs"])
+    restecg: int = Field(..., examples=[0], description=config.FEATURE_DESCRIPTIONS["restecg"])
+    thalach: float = Field(..., examples=[150], description=config.FEATURE_DESCRIPTIONS["thalach"])
+    exang: int = Field(..., examples=[0], description=config.FEATURE_DESCRIPTIONS["exang"])
+    oldpeak: float = Field(..., examples=[2.3], description=config.FEATURE_DESCRIPTIONS["oldpeak"])
+    slope: int = Field(..., examples=[0], description=config.FEATURE_DESCRIPTIONS["slope"])
+    ca: float = Field(..., examples=[0], description=config.FEATURE_DESCRIPTIONS["ca"])
+    thal: float = Field(..., examples=[1], description=config.FEATURE_DESCRIPTIONS["thal"])
 
 
 class PredictionResponse(BaseModel):
@@ -95,17 +111,8 @@ async def log_requests(request: Request, call_next):
 
 
 # ---------------------------------------------------------------------------
-# Lifecycle: warm the model, install Prometheus instrumentation
+# Prometheus instrumentation
 # ---------------------------------------------------------------------------
-@app.on_event("startup")
-def _startup() -> None:
-    try:
-        load_model()
-        logger.info("Model loaded successfully at startup.")
-    except FileNotFoundError as exc:
-        logger.warning("Model not available at startup: %s", exc)
-
-
 Instrumentator().instrument(app).expose(app, endpoint="/metrics")
 
 
