@@ -1,6 +1,6 @@
 # Heart Disease Risk Prediction — End-to-End MLOps Pipeline
 
-[![CI/CD Pipeline](https://github.com/<your-username>/heart-disease-mlops/actions/workflows/ci-cd.yml/badge.svg)](../../actions)
+[![CI/CD Pipeline](https://github.com/2024ac05734-netizen/heart-disease-mlops/actions/workflows/ci-cd.yml/badge.svg)](../../actions)
 
 MLOps Assignment 01 — **AIMLCZG523 (Machine Learning Operations)**.
 An end-to-end, reproducible ML system that predicts the risk of heart disease

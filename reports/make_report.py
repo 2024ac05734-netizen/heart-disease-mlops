@@ -262,7 +262,7 @@ def build():
           "achieves a cross-validated ROC-AUC of ~0.90 and a test ROC-AUC of ~0.97, "
           "providing a strong, interpretable baseline for heart-disease risk screening."),
         Spacer(1, 0.5 * cm),
-        p("<b>Repository:</b> https://github.com/&lt;your-username&gt;/heart-disease-mlops"),
+        p("<b>Repository:</b> https://github.com/2024ac05734-netizen/heart-disease-mlops"),
     ]
 
     doc = SimpleDocTemplate(
