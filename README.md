@@ -47,7 +47,15 @@ heart-disease-mlops/
 
 ## 1. Setup (clean environment)
 
+> **Where to run everything:** open PowerShell and `cd` into the **project root**
+> (`D:\M Tech\MLops\Assignment\heart-disease-mlops`). Every command in this
+> README — Python, tests, Docker, Compose and Kubernetes — is executed from that
+> folder. Paths like `k8s/`, `./run_docker.ps1` and `./helm/heart-api` are
+> relative to it.
+
 ```powershell
+cd "D:\M Tech\MLops\Assignment\heart-disease-mlops"
+
 # From the project root
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1        # Windows
@@ -93,9 +101,20 @@ curl -X POST http://localhost:8000/predict \
 
 ## 5. Docker
 
+> **Prerequisite:** Install and start **Docker Desktop** first (it provides
+> `docker`, `docker compose`, and — after enabling it in *Settings → Kubernetes* —
+> `kubectl`). Run all commands below from the project root. Start them **one at a
+> time**: sections 5, 6 and 7 each use port 8000, so stop the previous one before
+> starting the next. If PowerShell blocks the script, run once:
+> `Set-ExecutionPolicy -Scope Process Bypass`.
+
 ```powershell
+cd "D:\M Tech\MLops\Assignment\heart-disease-mlops"
+
 # One command (builds, runs, smoke-tests /predict):
 ./run_docker.ps1
+#   -> Swagger UI at http://localhost:8000/docs
+#   stop it with:  docker rm -f heart-api
 
 # or manually:
 docker build -t heart-disease-api:latest .
@@ -105,20 +124,27 @@ docker run --rm -p 8000:8000 heart-disease-api:latest
 ## 6. Full stack (API + Prometheus + Grafana)
 
 ```powershell
+cd "D:\M Tech\MLops\Assignment\heart-disease-mlops"
 docker compose up --build
 # API        -> http://localhost:8000/docs
 # Prometheus -> http://localhost:9090
 # Grafana    -> http://localhost:3000  (admin/admin)
+# stop with Ctrl+C, then:  docker compose down
 ```
 
 ## 7. Kubernetes deployment
 
 ```powershell
-# Enable Kubernetes in Docker Desktop OR start minikube
+cd "D:\M Tech\MLops\Assignment\heart-disease-mlops"
+
+# Enable Kubernetes in Docker Desktop OR start minikube first.
+# Build the image so the cluster can find it locally:
+docker build -t heart-disease-api:latest .
+
 kubectl apply -f k8s/
 kubectl get pods,svc
 
-# or with Helm:
+# or with Helm (install once: winget install Helm.Helm):
 helm install heart-api ./helm/heart-api
 ```
 
