@@ -1,0 +1,39 @@
+Heart Disease MLOps - Live Verification Log
+Captured: 2026-07-11 22:50:44
+============================================================
+
+[Docker] Server version:
+Server 29.6.1
+
+[Docker Compose] Monitoring stack (API + Prometheus + Grafana):
+NAME         IMAGE                      COMMAND                  SERVICE      CREATED          STATUS                    PORTS
+grafana      grafana/grafana:latest     "/run.sh"                grafana      58 seconds ago   Up 57 seconds             0.0.0.0:3000->3000/tcp, [::]:3000->3000/tcp
+heart-api    heart-disease-api:latest   "uvicorn api.main:ap…"   heart-api    59 seconds ago   Up 58 seconds (healthy)   0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp
+prometheus   prom/prometheus:latest     "/bin/prometheus --c…"   prometheus   58 seconds ago   Up 58 seconds             0.0.0.0:9090->9090/tcp, [::]:9090->9090/tcp
+
+[API] /health:  {"status":"ok","model_loaded":true}
+[Prometheus] heart-api target health: up
+[Grafana] /api/health: {"database":"ok","version":"13.1.0","commit":"b309c9bb3b81a748c3a75289236a27309ed2566a"}
+
+============================================================
+[Kubernetes] Docker Desktop cluster - captured 2026-07-11 22:56:11
+============================================================
+Node:
+NAME                    STATUS   ROLES           AGE     VERSION
+desktop-control-plane   Ready    control-plane   2m39s   v1.36.1
+
+Deployment / Pods (replicas=2):
+NAME                        READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/heart-api   2/2     2            2           105s
+
+NAME                             READY   STATUS    RESTARTS   AGE
+pod/heart-api-58b4776fb6-4h79m   1/1     Running   0          104s
+pod/heart-api-58b4776fb6-dwj6s   1/1     Running   0          104s
+
+Service (LoadBalancer):
+NAME                TYPE           CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
+heart-api-service   LoadBalancer   10.96.195.91   172.18.0.5    80:31861/TCP   104s
+
+API via LoadBalancer localhost:80 /health : {"status":"ok","model_loaded":true}
+API via LoadBalancer localhost:80 /predict: {"prediction":0,"label":"No Heart Disease","probability":0.1854,"confidence":0.8146}
+
