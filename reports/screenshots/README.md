@@ -14,13 +14,8 @@ They are ready to embed in the final report.
 | `04_prometheus_targets.png` | Prometheus scrape target `heart-api` — **1/1 UP** | Task 8 — Monitoring |
 | `05_grafana_dashboard.png` | Grafana "Heart Disease API Monitoring" dashboard with live data (24 predictions, outcome/request-rate/latency panels) | Task 8 — Monitoring |
 | `06_kubernetes_deployment.png` | `kubectl get nodes/deployment/pods/svc` — 2/2 pods Running, LoadBalancer service; live `/predict` returns "Heart Disease" 0.91 | Task 7 — Deployment |
+| `07_github_actions.png` | GitHub **Actions** tab — CI/CD Pipeline run **green ✓** (lint → test → train → docker) on `2024ac05734-netizen/heart-disease-mlops` | Task 5 — CI/CD |
 | `verification-log.txt` | Combined Docker + Compose + Kubernetes verification output | Tasks 6–8 |
-
-## Still to capture manually
-
-- `github_actions.png` — a green CI/CD pipeline run (lint → test → train → docker).
-  **Requires the repo pushed to GitHub first** (the workflow `.github/workflows/ci-cd.yml`
-  runs automatically on push). Capture from the repo's **Actions** tab.
 
 ## How these were regenerated
 
@@ -28,4 +23,5 @@ They are ready to embed in the final report.
 - Monitoring: `docker compose up -d` (Grafana http://localhost:3000 admin/admin,
   Prometheus http://localhost:9090); dashboard `monitoring/grafana/heart-dashboard.json`.
 - Kubernetes: `kubectl apply -f k8s/` (Docker Desktop Kubernetes), service on localhost:80.
-- Capture scripts: `reports/capture_screenshots.py` and `reports/render_terminal.py`.
+- Capture scripts: `reports/capture_screenshots.py`, `reports/render_terminal.py`
+  and `reports/capture_actions.py` (public Actions page).
