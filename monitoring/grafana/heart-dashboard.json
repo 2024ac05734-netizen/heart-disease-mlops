@@ -1,0 +1,46 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Total Predictions",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sum(heart_predictions_total)", "legendFormat": "predictions" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Predictions by Outcome",
+      "gridPos": { "h": 8, "w": 16, "x": 8, "y": 0 },
+      "targets": [
+        { "expr": "sum by (outcome) (heart_predictions_total)", "legendFormat": "{{outcome}}" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Rate (per second)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "rate(http_requests_total[1m])", "legendFormat": "{{handler}}" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Prediction Latency (p95)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, rate(heart_prediction_latency_seconds_bucket[5m]))",
+          "legendFormat": "p95 latency"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "title": "Heart Disease API Monitoring",
+  "tags": ["mlops", "heart-disease"],
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "10s"
+}

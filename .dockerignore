@@ -1,0 +1,13 @@
+.venv
+.git
+__pycache__
+*.pyc
+mlruns
+notebooks
+reports/screenshots
+data/processed
+.pytest_cache
+.github
+helm
+k8s
+*.md
