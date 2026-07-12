@@ -241,7 +241,7 @@ def build():
           "<font face='Courier'>pyproject.toml</font> allow a clean-environment install. "
           "A fixed random seed (42) makes splits and models deterministic. Because the "
           "preprocessing is inside the saved pipeline, inference is fully reproducible."),
-        PageBreak(),
+        Spacer(1, 0.3 * cm),
     ]
 
     # ---- 6. CI/CD & testing ----
