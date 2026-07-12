@@ -47,6 +47,17 @@ def fig(name, width=15 * cm):
     return img
 
 
+def shot(name, width=15.5 * cm):
+    path = config.REPORTS_DIR / "screenshots" / name
+    if not path.exists():
+        return Paragraph(f"[missing screenshot: {name}]", CAPTION)
+    img = Image(str(path))
+    ratio = img.imageHeight / float(img.imageWidth)
+    img.drawWidth = width
+    img.drawHeight = width * ratio
+    return img
+
+
 def p(text):
     return Paragraph(text, BODY)
 
@@ -90,7 +101,11 @@ def build():
                   "health data and deploy the solution as a cloud-ready, monitored API.", CENTER),
         Spacer(1, 0.5 * cm),
         Paragraph("Dataset: Heart Disease UCI (Cleveland processed, 303 records)", CENTER),
-        Spacer(1, 3 * cm),
+        Spacer(1, 2 * cm),
+        Paragraph("<b>Name:</b> Goru Sai Sree Chaitanya", CENTER),
+        Spacer(1, 0.2 * cm),
+        Paragraph("<b>BITS ID:</b> 2024AC05734", CENTER),
+        Spacer(1, 1 * cm),
         Paragraph("Total Marks: 50", CENTER),
         PageBreak(),
     ]
@@ -113,6 +128,31 @@ def build():
         p("<b>Tech stack:</b> Python 3.12, Pandas/NumPy, Scikit-learn, XGBoost, "
           "Matplotlib/Seaborn, MLflow, FastAPI, Pytest, Docker, Kubernetes/Helm, "
           "Prometheus, Grafana, GitHub Actions."),
+        Spacer(1, 0.3 * cm),
+        Paragraph("1.2 Setup &amp; Installation", H2),
+        p("The project installs cleanly into a fresh virtual environment from pinned "
+          "dependencies. From the repository root:"),
+        Paragraph(
+            "<font face='Courier'>"
+            "python -m venv .venv<br/>"
+            ".venv\\Scripts\\activate&nbsp;&nbsp;# Windows "
+            "(source .venv/bin/activate on Linux/macOS)<br/>"
+            "pip install -r requirements.txt -r requirements-dev.txt<br/>"
+            "pip install -e .<br/><br/>"
+            "python -m heart_mlops.data_download&nbsp;&nbsp;# download UCI dataset -> data/raw/<br/>"
+            "python -m heart_mlops.eda&nbsp;&nbsp;# EDA figures -> reports/figures/<br/>"
+            "python -m heart_mlops.train&nbsp;&nbsp;# train + tune + MLflow -> models/model.joblib<br/>"
+            "mlflow ui --port 5000&nbsp;&nbsp;# inspect experiments at http://localhost:5000<br/>"
+            "pytest&nbsp;&nbsp;# run the 14 unit + integration tests<br/>"
+            "uvicorn api.main:app --port 8000&nbsp;&nbsp;# serve the API locally<br/><br/>"
+            "docker build -t heart-disease-api:latest .<br/>"
+            "docker run --rm -p 8000:8000 heart-disease-api:latest<br/>"
+            "kubectl apply -f k8s/&nbsp;&nbsp;# or: helm install heart-api ./helm/heart-api<br/>"
+            "docker compose up -d&nbsp;&nbsp;# Prometheus + Grafana monitoring stack"
+            "</font>", BODY),
+        p("A pinned <font face='Courier'>requirements.txt</font> / "
+          "<font face='Courier'>pyproject.toml</font> and a fixed random seed (42) make "
+          "the setup fully reproducible on any clean machine."),
         PageBreak(),
     ]
 
@@ -183,8 +223,18 @@ def build():
           "model. The best model is additionally logged in a dedicated run. The MLflow "
           "UI (<font face='Courier'>mlflow ui</font>) provides side-by-side run "
           "comparison and full reproducibility."),
-        Paragraph("<i>[Screenshot placeholder: MLflow UI runs &amp; metrics &mdash; "
-                  "add from reports/screenshots/]</i>", CAPTION),
+        Paragraph("Screenshots below (Figures 9&ndash;10) show the live MLflow UI.", CAPTION),
+        Spacer(1, 0.3 * cm),
+        shot("01_mlflow_runs.png", 15.5 * cm),
+        Paragraph("Figure 9: MLflow experiment <font face='Courier'>heart-disease-"
+                  "classification</font> &mdash; all runs (LR / RF / XGBoost) compared "
+                  "side by side.", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("02_mlflow_run_detail.png", 15.5 * cm),
+        Paragraph("Figure 10: Best run <font face='Courier'>best_logistic_regression"
+                  "</font> &mdash; logged parameters and 7 metrics (accuracy 0.885, "
+                  "CV ROC-AUC 0.902, F1 0.881, precision 0.839, recall 0.929).", CAPTION),
+        PageBreak(),
         Spacer(1, 0.3 * cm),
         Paragraph("5. Model Packaging &amp; Reproducibility", H1),
         p("The final pipeline (preprocessing + classifier) is serialized to "
@@ -211,7 +261,12 @@ def build():
           "clearly reported. Tests cover data cleaning, stratified splitting, the "
           "preprocessing transformer, model training/prediction, and all API endpoints "
           "(including validation errors and the metrics endpoint)."),
-        Paragraph("<i>[Screenshot placeholder: green GitHub Actions run]</i>", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("07_github_actions.png", 15.5 * cm),
+        Paragraph("Figure 11: GitHub Actions &mdash; CI/CD Pipeline run green "
+                  "(lint &rarr; test &rarr; train &rarr; docker) on "
+                  "<font face='Courier'>2024ac05734-netizen/heart-disease-mlops</font>.",
+                  CAPTION),
         Spacer(1, 0.3 * cm),
         Paragraph("7. Model Containerisation", H1),
         p("A multi-stage <font face='Courier'>Dockerfile</font> packages the API code, "
@@ -221,7 +276,13 @@ def build():
           "returns the prediction plus a confidence/probability score. "
           "<font face='Courier'>run_docker.ps1</font> builds, runs and smoke-tests the "
           "container with sample input in one command."),
-        Paragraph("<i>[Screenshot placeholder: docker build + /predict response]</i>", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("03_swagger_deployed_api.png", 15.5 * cm),
+        Paragraph("Figure 12: FastAPI Swagger <font face='Courier'>/docs</font> of the "
+                  "containerised / deployed API exposing "
+                  "<font face='Courier'>/health</font>, <font face='Courier'>/predict"
+                  "</font>, <font face='Courier'>/predict/batch</font> and "
+                  "<font face='Courier'>/metrics</font>.", CAPTION),
         PageBreak(),
     ]
 
@@ -237,8 +298,12 @@ def build():
           "<font face='Courier'>kubectl apply -f k8s/</font> or "
           "<font face='Courier'>helm install heart-api ./helm/heart-api</font> on "
           "Minikube, Docker Desktop Kubernetes, AKS, EKS or GKE."),
-        Paragraph("<i>[Screenshot placeholder: kubectl get pods,svc &amp; external "
-                  "endpoint]</i>", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("06_kubernetes_deployment.png", 15.5 * cm),
+        Paragraph("Figure 13: <font face='Courier'>kubectl get nodes/deployment/pods/svc"
+                  "</font> &mdash; 2/2 pods Running behind a LoadBalancer Service; a live "
+                  "<font face='Courier'>/predict</font> call returns \"Heart Disease\" "
+                  "(0.91).", CAPTION),
         Spacer(1, 0.3 * cm),
         Paragraph("9. Monitoring &amp; Logging", H1),
         p("Request/response logging (method, path, status, latency) is implemented as "
@@ -252,7 +317,15 @@ def build():
           "(<font face='Courier'>monitoring/grafana/heart-dashboard.json</font>) "
           "visualises request rate, prediction counts and p95 latency, helping detect "
           "model failures, drift and API downtime."),
-        Paragraph("<i>[Screenshot placeholder: Grafana dashboard]</i>", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("04_prometheus_targets.png", 15.5 * cm),
+        Paragraph("Figure 14: Prometheus scrape target "
+                  "<font face='Courier'>heart-api</font> &mdash; 1/1 UP.", CAPTION),
+        Spacer(1, 0.2 * cm),
+        shot("05_grafana_dashboard.png", 15.5 * cm),
+        Paragraph("Figure 15: Grafana \"Heart Disease API Monitoring\" dashboard with "
+                  "live data &mdash; prediction counts, request rate and p95 latency "
+                  "panels.", CAPTION),
         Spacer(1, 0.3 * cm),
         Paragraph("10. Conclusion", H1),
         p("The delivered system demonstrates production-ready MLOps practices: a "
@@ -269,7 +342,8 @@ def build():
         str(config.REPORTS_DIR / "MLOps_Assignment_Report.pdf"),
         pagesize=A4, topMargin=1.8 * cm, bottomMargin=1.8 * cm,
         leftMargin=2 * cm, rightMargin=2 * cm,
-        title="MLOps Assignment 01 - Heart Disease", author="AIMLCZG523 Student",
+        title="MLOps Assignment 01 - Heart Disease",
+        author="Goru Sai Sree Chaitanya (2024AC05734)",
     )
     doc.build(story)
     print("Report written to", config.REPORTS_DIR / "MLOps_Assignment_Report.pdf")
