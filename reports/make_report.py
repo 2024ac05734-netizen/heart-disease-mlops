@@ -336,6 +336,9 @@ def build():
           "providing a strong, interpretable baseline for heart-disease risk screening."),
         Spacer(1, 0.5 * cm),
         p("<b>Repository:</b> https://github.com/2024ac05734-netizen/heart-disease-mlops"),
+        Spacer(1, 0.2 * cm),
+        p("<b>Video Walkthrough:</b> https://github.com/2024ac05734-netizen/"
+          "heart-disease-mlops/tree/master/reports &mdash; Pipeline_Walkthrough"),
     ]
 
     doc = SimpleDocTemplate(
