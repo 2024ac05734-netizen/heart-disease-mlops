@@ -47,7 +47,7 @@ def fig(name, width=15 * cm):
     return img
 
 
-def shot(name, width=15.5 * cm):
+def shot(name, width=13.5 * cm):
     path = config.REPORTS_DIR / "screenshots" / name
     if not path.exists():
         return Paragraph(f"[missing screenshot: {name}]", CAPTION)
@@ -122,7 +122,7 @@ def build():
           "with a Helm chart, and monitoring with Prometheus and Grafana."),
         Spacer(1, 0.3 * cm),
         Paragraph("1.1 Architecture", H2),
-        fig("architecture.png", 16 * cm),
+        fig("architecture.png", 14 * cm),
         Paragraph("Figure 1: End-to-end MLOps architecture.", CAPTION),
         Spacer(1, 0.2 * cm),
         p("<b>Tech stack:</b> Python 3.12, Pandas/NumPy, Scikit-learn, XGBoost, "
@@ -138,13 +138,13 @@ def build():
             ".venv\\Scripts\\activate&nbsp;&nbsp;# Windows "
             "(source .venv/bin/activate on Linux/macOS)<br/>"
             "pip install -r requirements.txt -r requirements-dev.txt<br/>"
-            "pip install -e .<br/><br/>"
+            "pip install -e .<br/>"
             "python -m heart_mlops.data_download&nbsp;&nbsp;# download UCI dataset -> data/raw/<br/>"
             "python -m heart_mlops.eda&nbsp;&nbsp;# EDA figures -> reports/figures/<br/>"
             "python -m heart_mlops.train&nbsp;&nbsp;# train + tune + MLflow -> models/model.joblib<br/>"
             "mlflow ui --port 5000&nbsp;&nbsp;# inspect experiments at http://localhost:5000<br/>"
             "pytest&nbsp;&nbsp;# run the 14 unit + integration tests<br/>"
-            "uvicorn api.main:app --port 8000&nbsp;&nbsp;# serve the API locally<br/><br/>"
+            "uvicorn api.main:app --port 8000&nbsp;&nbsp;# serve the API locally<br/>"
             "docker build -t heart-disease-api:latest .<br/>"
             "docker run --rm -p 8000:8000 heart-disease-api:latest<br/>"
             "kubectl apply -f k8s/&nbsp;&nbsp;# or: helm install heart-api ./helm/heart-api<br/>"
@@ -170,14 +170,13 @@ def build():
         Paragraph("Figure 2: Target class distribution.", CAPTION),
         fig("missing_values.png", 11 * cm),
         Paragraph("Figure 3: Missing-value analysis.", CAPTION),
-        PageBreak(),
-        fig("histograms.png", 15 * cm),
+        fig("histograms.png", 13.5 * cm),
         Paragraph("Figure 4: Distributions of numeric features.", CAPTION),
-        fig("correlation_heatmap.png", 14 * cm),
+        fig("correlation_heatmap.png", 12.5 * cm),
         Paragraph("Figure 5: Correlation heatmap. cp, thalach, oldpeak, ca and thal "
                   "show the strongest association with the target.", CAPTION),
         PageBreak(),
-        fig("feature_vs_target_boxplots.png", 16 * cm),
+        fig("feature_vs_target_boxplots.png", 15 * cm),
         Paragraph("Figure 6: Numeric features vs target &mdash; patients with disease "
                   "tend to show lower max heart rate (thalach) and higher oldpeak.", CAPTION),
         PageBreak(),
@@ -225,16 +224,15 @@ def build():
           "comparison and full reproducibility."),
         Paragraph("Screenshots below (Figures 9&ndash;10) show the live MLflow UI.", CAPTION),
         Spacer(1, 0.3 * cm),
-        shot("01_mlflow_runs.png", 15.5 * cm),
+        shot("01_mlflow_runs.png", 13.5 * cm),
         Paragraph("Figure 9: MLflow experiment <font face='Courier'>heart-disease-"
                   "classification</font> &mdash; all runs (LR / RF / XGBoost) compared "
                   "side by side.", CAPTION),
         Spacer(1, 0.2 * cm),
-        shot("02_mlflow_run_detail.png", 15.5 * cm),
+        shot("02_mlflow_run_detail.png", 13.5 * cm),
         Paragraph("Figure 10: Best run <font face='Courier'>best_logistic_regression"
                   "</font> &mdash; logged parameters and 7 metrics (accuracy 0.885, "
                   "CV ROC-AUC 0.902, F1 0.881, precision 0.839, recall 0.929).", CAPTION),
-        PageBreak(),
         Spacer(1, 0.3 * cm),
         Paragraph("5. Model Packaging &amp; Reproducibility", H1),
         p("The final pipeline (preprocessing + classifier) is serialized to "
@@ -262,7 +260,7 @@ def build():
           "preprocessing transformer, model training/prediction, and all API endpoints "
           "(including validation errors and the metrics endpoint)."),
         Spacer(1, 0.2 * cm),
-        shot("07_github_actions.png", 15.5 * cm),
+        shot("07_github_actions.png", 13.5 * cm),
         Paragraph("Figure 11: GitHub Actions &mdash; CI/CD Pipeline run green "
                   "(lint &rarr; test &rarr; train &rarr; docker) on "
                   "<font face='Courier'>2024ac05734-netizen/heart-disease-mlops</font>.",
@@ -277,7 +275,7 @@ def build():
           "<font face='Courier'>run_docker.ps1</font> builds, runs and smoke-tests the "
           "container with sample input in one command."),
         Spacer(1, 0.2 * cm),
-        shot("03_swagger_deployed_api.png", 15.5 * cm),
+        shot("03_swagger_deployed_api.png", 13.5 * cm),
         Paragraph("Figure 12: FastAPI Swagger <font face='Courier'>/docs</font> of the "
                   "containerised / deployed API exposing "
                   "<font face='Courier'>/health</font>, <font face='Courier'>/predict"
@@ -299,7 +297,7 @@ def build():
           "<font face='Courier'>helm install heart-api ./helm/heart-api</font> on "
           "Minikube, Docker Desktop Kubernetes, AKS, EKS or GKE."),
         Spacer(1, 0.2 * cm),
-        shot("06_kubernetes_deployment.png", 15.5 * cm),
+        shot("06_kubernetes_deployment.png", 13.5 * cm),
         Paragraph("Figure 13: <font face='Courier'>kubectl get nodes/deployment/pods/svc"
                   "</font> &mdash; 2/2 pods Running behind a LoadBalancer Service; a live "
                   "<font face='Courier'>/predict</font> call returns \"Heart Disease\" "
@@ -318,11 +316,11 @@ def build():
           "visualises request rate, prediction counts and p95 latency, helping detect "
           "model failures, drift and API downtime."),
         Spacer(1, 0.2 * cm),
-        shot("04_prometheus_targets.png", 15.5 * cm),
+        shot("04_prometheus_targets.png", 13.5 * cm),
         Paragraph("Figure 14: Prometheus scrape target "
                   "<font face='Courier'>heart-api</font> &mdash; 1/1 UP.", CAPTION),
         Spacer(1, 0.2 * cm),
-        shot("05_grafana_dashboard.png", 15.5 * cm),
+        shot("05_grafana_dashboard.png", 13.5 * cm),
         Paragraph("Figure 15: Grafana \"Heart Disease API Monitoring\" dashboard with "
                   "live data &mdash; prediction counts, request rate and p95 latency "
                   "panels.", CAPTION),
